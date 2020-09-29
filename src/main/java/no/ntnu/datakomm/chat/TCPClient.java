@@ -26,13 +26,26 @@ public class TCPClient {
      * @return True on success, false otherwise
      */
     public boolean connect(String host, int port) {
+        // Step 1: implement this method
+        // Hint: Remember to process all exceptions and return false on error
+        // Hint: Remember to set up all the necessary input/output stream variables
         try {
             connection = new Socket(host, port);
             out = connection.getOutputStream();
             in = connection.getInputStream();
+            toServer = new PrintWriter(out, true);
+            fromServer = new BufferedReader(new InputStreamReader(in));
             return true;
+
+        } catch (UnknownHostException e) {
+            lastError = "Unknown host";
+            System.err.println(lastError);
+        } catch (ConnectException e) {
+            lastError = "No chat server listening on given port";
+            System.err.println(lastError);
         } catch (IOException e) {
-            e.printStackTrace();
+            lastError = "I/O error for the socket";
+            System.err.println(lastError);
         }
         return false;
     }
