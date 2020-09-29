@@ -10,6 +10,9 @@ public class TCPClient {
     private BufferedReader fromServer;
     private Socket connection;
 
+    private OutputStream out;
+    private InputStream in;
+
     // Hint: if you want to store a message for the last error, store it here
     private String lastError = null;
 
@@ -23,9 +26,14 @@ public class TCPClient {
      * @return True on success, false otherwise
      */
     public boolean connect(String host, int port) {
-        // TODO Step 1: implement this method
-        // Hint: Remember to process all exceptions and return false on error
-        // Hint: Remember to set up all the necessary input/output stream variables
+        try {
+            connection = new Socket(host, port);
+            out = connection.getOutputStream();
+            in = connection.getInputStream();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
