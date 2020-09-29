@@ -98,10 +98,11 @@ public class TCPClient {
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
         try {
-            String msgToSend = "/msg " + message;
+            String msgToSend = "msg " + message;
             sendCommand(msgToSend);
             return true;
         } catch(Exception e) {
+            lastError = "Unable to send message";
             e.printStackTrace();
         }
         return false;
