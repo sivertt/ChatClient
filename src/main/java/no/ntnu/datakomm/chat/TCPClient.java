@@ -1,5 +1,7 @@
 package no.ntnu.datakomm.chat;
 
+import com.sun.org.apache.bcel.internal.generic.SWITCH;
+
 import java.io.*;
 import java.net.*;
 import java.util.LinkedList;
@@ -208,6 +210,21 @@ public class TCPClient {
             // and act on it.
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
+
+            String msgToSend = waitServerResponse();
+            String[] msgParts = msgToSend.split(" ", 1);
+            String cmd = msgParts[0];
+            switch(cmd) {
+                case "loginok":
+                    onLoginResult(true,"");
+                    break;
+                case "loginerr":
+                    lastError = "A login error occurred!";
+                    onLoginResult(false,lastError);
+                    break;
+                default:
+                    System.out.println("Unable to interpret server response.");
+            }
 
             // TODO Step 5: update this method, handle user-list response from the server
             // Hint: In Step 5 reuse onUserList() method
