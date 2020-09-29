@@ -57,7 +57,7 @@ public class TCPClient {
      * background thread trying to read server's response will get error in the
      * input stream and may try to call this method when the socket is already
      * in the process of being closed. with "synchronized" keyword we make sure
-     * that no two threads call this method in parallel.
+     * that no two threads call this method in parallel. :)
      */
     public synchronized void disconnect() {
         // TODO Step 4: implement this method
