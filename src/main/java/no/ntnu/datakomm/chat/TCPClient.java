@@ -211,9 +211,16 @@ public class TCPClient {
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
 
+            String cmd = "";
             String msgToSend = waitServerResponse();
-            String[] msgParts = msgToSend.split(" ", 1);
-            String cmd = msgParts[0];
+            //Checks if the command has a space or not.
+            if(msgToSend.contains(" ")) {
+                String[] msgParts = msgToSend.split(" ", 1);
+                cmd = msgParts[0];
+            }
+            else{
+                cmd = msgToSend;
+            }
             switch(cmd) {
                 case "loginok":
                     onLoginResult(true,"");
