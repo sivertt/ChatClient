@@ -94,9 +94,16 @@ public class TCPClient {
      * @return true if message sent, false on error
      */
     public boolean sendPublicMessage(String message) {
-        // TODO Step 2: implement this method
+        // Step 2: implement this method
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
+        try {
+            String msgToSend = "/msg " + message;
+            sendCommand(msgToSend);
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
