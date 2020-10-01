@@ -1,7 +1,5 @@
 package no.ntnu.datakomm.chat;
 
-import com.sun.org.apache.bcel.internal.generic.SWITCH;
-
 import java.io.*;
 import java.net.*;
 import java.util.LinkedList;
@@ -167,14 +165,19 @@ public class TCPClient {
      * @return one line of text (one command) received from the server
      */
     private String waitServerResponse() {
-        // TODO Step 3: Implement this method
+        // Step 3: Implement this method
         // TODO Step 4: If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
+        String response;
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            return reader.readLine();
-
-        } catch (Exception e) {
+            response = fromServer.readLine();
+            if (response != null) {
+                System.out.println("SERVER: " + response);
+                return response;
+            } else {
+                System.out.println("Server returned an empty response");
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -210,22 +213,21 @@ public class TCPClient {
      */
     private void parseIncomingCommands() {
         while (isConnectionActive()) {
-            // TODO Step 3: Implement this method
+            // Step 3: Implement this method
             // Hint: Reuse waitServerResponse() method
             // Hint: Have a switch-case (or other way) to check what type of response is received from the server
             // and act on it.
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
 
-            String cmd = "";
-            String msgToSend = waitServerResponse();
+            String cmd;
+            String response = waitServerResponse();
             //Checks if the command has a space or not.
-            if(msgToSend.contains(" ")) {
-                String[] msgParts = msgToSend.split(" ", 1);
-                cmd = msgParts[0];
-            }
-            else{
-                cmd = msgToSend;
+            if(response.contains(" ")) {
+                String[] responseParts = response.split(" ", 2);
+                cmd = responseParts[0];
+            } else {
+                cmd = response;
             }
             switch(cmd) {
                 case "loginok":
@@ -233,10 +235,13 @@ public class TCPClient {
                     break;
                 case "loginerr":
                     lastError = "A login error occurred!";
-                    onLoginResult(false,lastError);
+                    onLoginResult(false, lastError);
                     break;
                 case "msg":
                     System.out.println("Message received");
+                    break;
+                case "privmsg":
+                    System.out.println("Private message received");
                     break;
                 default:
                     System.out.println("Unable to interpret server response.");
