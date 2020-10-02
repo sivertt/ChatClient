@@ -243,6 +243,9 @@ public class TCPClient {
                 case "privmsg":
                     System.out.println("Private message received");
                     break;
+                case "msgok":
+                    System.out.println("Message sent");
+                    break;
                 default:
                     System.out.println("Unable to interpret server response.");
             }
@@ -304,8 +307,11 @@ public class TCPClient {
      * Internet error)
      */
     private void onDisconnect() {
-        // TODO Step 4: Implement this method
+        // Step 4: Implement this method
         // Hint: all the onXXX() methods will be similar to onLoginResult()
+        for (ChatListener l : listeners) {
+            l.onDisconnect();
+        }
     }
 
     /**
