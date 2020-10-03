@@ -60,7 +60,7 @@ public class TCPClient {
      * that no two threads call this method in parallel. :)
      */
     public synchronized void disconnect() {
-        // TODO Step 4: implement this method
+        // Step 4: implement this method
         // Hint: remember to check if connection is active
         if(isConnectionActive()) {
             try {
@@ -143,9 +143,15 @@ public class TCPClient {
      * clear your current user list and use events in the listener.
      */
     public void refreshUserList() {
-        // TODO Step 5: implement this method
+        // Step 5: implement this method
         // Hint: Use Wireshark and the provided chat client reference app to find out what commands the
         // client and server exchange for user listing.
+        try {
+            sendCommand("users");
+        } catch (Exception e) {
+            lastError = "Unable to retrieve user list";
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -179,7 +185,7 @@ public class TCPClient {
      */
     private String waitServerResponse() {
         // Step 3: Implement this method
-        // TODO Step 4: If you get I/O Exception or null from the stream, it means that something has gone wrong
+        // Step 4: If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
         String response;
         try {
@@ -236,12 +242,13 @@ public class TCPClient {
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
 
-            String cmd;
             String response = waitServerResponse();
             //Checks if the command has a space or not.
             if (response != null) {
+                String cmd;
+                String[] responseParts = null;
                 if(response.contains(" ")) {
-                    String[] responseParts = response.split(" ", 2);
+                    responseParts = response.split(" ", 2);
                     cmd = responseParts[0];
                 } else {
                     cmd = response;
@@ -253,6 +260,11 @@ public class TCPClient {
                     case "loginerr":
                         lastError = "A login error occurred!";
                         onLoginResult(false, lastError);
+                        break;
+                    case "users":
+                        System.out.println("User list retrieved");
+                        String[] users = responseParts[1].split(" ");
+                        onUsersList(users);
                         break;
                     case "msg":
                         System.out.println("Message received");
@@ -337,7 +349,10 @@ public class TCPClient {
      * @param users List with usernames
      */
     private void onUsersList(String[] users) {
-        // TODO Step 5: Implement this method
+        // Step 5: Implement this method
+        for (ChatListener l : listeners) {
+            l.onUserList(users);
+        }
     }
 
     /**
