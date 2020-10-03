@@ -62,6 +62,19 @@ public class TCPClient {
     public synchronized void disconnect() {
         // TODO Step 4: implement this method
         // Hint: remember to check if connection is active
+        if(isConnectionActive()) {
+            try {
+                connection.close();
+                connection = null;
+                toServer = null;
+                fromServer = null;
+                onDisconnect();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("No connection to close");
+        }
     }
 
     /**
@@ -170,15 +183,18 @@ public class TCPClient {
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
         String response;
         try {
-            response = fromServer.readLine();
-            if (response != null) {
-                System.out.println("SERVER: " + response);
-                return response;
-            } else {
-                System.out.println("Server returned an empty response");
+            if (isConnectionActive()) {
+                response = fromServer.readLine();
+                if (response != null) {
+                    System.out.println("SERVER: " + response);
+                    return response;
+                } else {
+                    System.out.println("Server returned an empty response");
+                }
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
+            disconnect();
         }
         return null;
     }
@@ -223,33 +239,34 @@ public class TCPClient {
             String cmd;
             String response = waitServerResponse();
             //Checks if the command has a space or not.
-            if(response.contains(" ")) {
-                String[] responseParts = response.split(" ", 2);
-                cmd = responseParts[0];
-            } else {
-                cmd = response;
+            if (response != null) {
+                if(response.contains(" ")) {
+                    String[] responseParts = response.split(" ", 2);
+                    cmd = responseParts[0];
+                } else {
+                    cmd = response;
+                }
+                switch(cmd) {
+                    case "loginok":
+                        onLoginResult(true,"");
+                        break;
+                    case "loginerr":
+                        lastError = "A login error occurred!";
+                        onLoginResult(false, lastError);
+                        break;
+                    case "msg":
+                        System.out.println("Message received");
+                        break;
+                    case "privmsg":
+                        System.out.println("Private message received");
+                        break;
+                    case "msgok":
+                        System.out.println("Message sent");
+                        break;
+                    default:
+                        System.out.println("Unable to interpret server response.");
+                }
             }
-            switch(cmd) {
-                case "loginok":
-                    onLoginResult(true,"");
-                    break;
-                case "loginerr":
-                    lastError = "A login error occurred!";
-                    onLoginResult(false, lastError);
-                    break;
-                case "msg":
-                    System.out.println("Message received");
-                    break;
-                case "privmsg":
-                    System.out.println("Private message received");
-                    break;
-                case "msgok":
-                    System.out.println("Message sent");
-                    break;
-                default:
-                    System.out.println("Unable to interpret server response.");
-            }
-
             // TODO Step 5: update this method, handle user-list response from the server
             // Hint: In Step 5 reuse onUserList() method
 
