@@ -182,8 +182,15 @@ public class TCPClient {
      * Send a request for the list of commands that server supports.
      */
     public void askSupportedCommands() {
-        // TODO Step 8: Implement this method
+        // Step 8: Implement this method
         // Hint: Reuse sendCommand() method
+        try {
+            String helpMsg = "help";
+            sendCommand(helpMsg);
+        } catch(Exception e) {
+            lastError = "Unable to send message";
+            e.printStackTrace();
+        }
     }
 
 
@@ -293,6 +300,10 @@ public class TCPClient {
                     case "msgok":
                         System.out.println("Message sent");
                         break;
+                    case "supported":
+                        String[] commands = responseParts[1].split(" ");
+                        onSupported(commands);
+                        break;
                     default:
                         System.out.println("Unable to interpret server response.");
                 }
@@ -305,7 +316,7 @@ public class TCPClient {
             // Step 7: add support for incoming command errors (type: cmderr)
             // Hint for Step 7: call corresponding onXXX() methods which will notify all the listeners
 
-            // TODO Step 8: add support for incoming supported command list (type: supported)
+            // Step 8: add support for incoming supported command list (type: supported)
 
         }
     }
@@ -419,6 +430,9 @@ public class TCPClient {
      * @param commands Commands supported by the server
      */
     private void onSupported(String[] commands) {
-        // TODO Step 8: Implement this method
+        // Step 8: Implement this method
+        for (ChatListener l : listeners) {
+            l.onSupportedCommands(commands);
+        }
     }
 }
