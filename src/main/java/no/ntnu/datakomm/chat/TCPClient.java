@@ -270,7 +270,6 @@ public class TCPClient {
                         onLoginResult(false, lastError);
                         break;
                     case "users":
-                        System.out.println("User list retrieved");
                         String[] users = responseParts[1].split(" ");
                         onUsersList(users);
                         break;
@@ -287,7 +286,7 @@ public class TCPClient {
                         System.out.println("Unable to interpret server response.");
                 }
             }
-            // TODO Step 5: update this method, handle user-list response from the server
+            // Step 5: update this method, handle user-list response from the server
             // Hint: In Step 5 reuse onUserList() method
 
             // TODO Step 7: add support for incoming chat messages from other users (types: msg, privmsg)
