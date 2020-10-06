@@ -282,11 +282,11 @@ public class TCPClient {
                         onUsersList(users);
                         break;
                     case "msg":
-                        String[] msg = responseParts[1].split(" ");
+                        String[] msg = responseParts[1].split(" ", 2);
                         onMsgReceived(false, msg[0], msg[1]);
                         break;
                     case "privmsg":
-                        String[] privmsg = responseParts[1].split(" ");
+                        String[] privmsg = responseParts[1].split(" ", 2);
                         onMsgReceived(true, privmsg[0], privmsg[1]);
                         break;
                     case "msgerr":
