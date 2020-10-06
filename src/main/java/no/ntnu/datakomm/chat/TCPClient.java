@@ -1,5 +1,6 @@
 package no.ntnu.datakomm.chat;
 
+import javax.xml.soap.Text;
 import java.io.*;
 import java.net.*;
 import java.util.LinkedList;
@@ -274,10 +275,20 @@ public class TCPClient {
                         onUsersList(users);
                         break;
                     case "msg":
-                        System.out.println("Message received");
+                        String[] msg = responseParts[1].split(" ");
+                        onMsgReceived(false, msg[0], msg[1]);
                         break;
                     case "privmsg":
-                        System.out.println("Private message received");
+                        String[] privmsg = responseParts[1].split(" ");
+                        onMsgReceived(true, privmsg[0], privmsg[1]);
+                        break;
+                    case "msgerr":
+                        lastError = responseParts[1];
+                        onMsgError(lastError);
+                        break;
+                    case "cmderr":
+                        lastError = responseParts[1];
+                        onCmdError(lastError);
                         break;
                     case "msgok":
                         System.out.println("Message sent");
@@ -289,9 +300,9 @@ public class TCPClient {
             // Step 5: update this method, handle user-list response from the server
             // Hint: In Step 5 reuse onUserList() method
 
-            // TODO Step 7: add support for incoming chat messages from other users (types: msg, privmsg)
-            // TODO Step 7: add support for incoming message errors (type: msgerr)
-            // TODO Step 7: add support for incoming command errors (type: cmderr)
+            // Step 7: add support for incoming chat messages from other users (types: msg, privmsg)
+            // Step 7: add support for incoming message errors (type: msgerr)
+            // Step 7: add support for incoming command errors (type: cmderr)
             // Hint for Step 7: call corresponding onXXX() methods which will notify all the listeners
 
             // TODO Step 8: add support for incoming supported command list (type: supported)
@@ -370,7 +381,11 @@ public class TCPClient {
      * @param text   Message text
      */
     private void onMsgReceived(boolean priv, String sender, String text) {
-        // TODO Step 7: Implement this method
+        // Step 7: Implement this method
+        TextMessage msg = new TextMessage(sender, priv, text);
+        for (ChatListener l : listeners) {
+            l.onMessageReceived(msg);
+        }
     }
 
     /**
@@ -379,7 +394,10 @@ public class TCPClient {
      * @param errMsg Error description returned by the server
      */
     private void onMsgError(String errMsg) {
-        // TODO Step 7: Implement this method
+        // Step 7: Implement this method
+        for (ChatListener l : listeners) {
+            l.onMessageError(errMsg);
+        }
     }
 
     /**
@@ -388,7 +406,10 @@ public class TCPClient {
      * @param errMsg Error message
      */
     private void onCmdError(String errMsg) {
-        // TODO Step 7: Implement this method
+        // Step 7: Implement this method
+        for (ChatListener l : listeners) {
+            l.onCommandError(errMsg);
+        }
     }
 
     /**
